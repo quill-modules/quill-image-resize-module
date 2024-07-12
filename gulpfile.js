@@ -9,6 +9,7 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 const { watch, series, parallel } = gulp;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const docsBundle = resolve(__dirname, './docs');
 const distBundle = resolve(__dirname, './dist');
 const moduleRoot = resolve(__dirname, './src');
 const moduleInput = resolve(moduleRoot, 'ImageResize.js');
@@ -47,7 +48,7 @@ const buildUmd = async () => {
     },
   });
   return bundle.write({
-    file: resolve(distBundle, 'dev.js'),
+    file: resolve(docsBundle, 'dev.js'),
     format: 'umd',
     sourcemap: true,
     name: 'ImageResize',
