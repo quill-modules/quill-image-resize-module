@@ -1,5 +1,5 @@
 {
-  "name": "@rebuild/quill-image-resize-module",
+  "name": "quill-image-resize-module-rebuild",
   "version": "0.0.0",
   "type": "module",
   "description": "A module for Quill rich text editor to allow images to be resized.",

@@ -2,7 +2,7 @@
 
 A module for Quill rich text editor to allow images to be resized. You can use it in Quill2.x or Quill1.3.7
 
-Fork from [quill-image-resize-module](https://github.com/kensnyder/quill-image-resize-module). This module fix export problem. Your can use `import ImageResize from '@rebuild/quill-image-resize-module';` to your project.
+Fork from [quill-image-resize-module](https://github.com/kensnyder/quill-image-resize-module). This module fix export problem. Your can use `import ImageResize from 'quill-image-resize-module-rebuild';` to your project.
 
 ## Demo
 
@@ -12,9 +12,13 @@ Fork from [quill-image-resize-module](https://github.com/kensnyder/quill-image-r
 
 ## Usage
 
+```sh
+npm install quill-image-resize-module-rebuild
+```
+
 ```javascript
 import Quill from 'quill';
-import ImageResize from '@rebuild/quill-image-resize-module';
+import ImageResize from 'quill-image-resize-module-rebuild';
 
 var quill = new Quill(editor, {
   // ...
