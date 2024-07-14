@@ -1,5 +1,5 @@
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import gulp from 'gulp';
 import { rollup } from 'rollup';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';

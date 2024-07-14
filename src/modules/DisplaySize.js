@@ -29,14 +29,16 @@ export class DisplaySize extends BaseModule {
         left: null,
         transform: null,
       });
-    } else if (this.img.style.float == 'right') {
+    }
+    else if (this.img.style.float === 'right') {
       // position off bottom left
       Object.assign(this.display.style, {
         right: null,
         bottom: null,
         transform: `translate(calc(-100% - 4px), ${this.img.height}px)`,
       });
-    } else {
+    }
+    else {
       // position off bottom right
       Object.assign(this.display.style, {
         left: null,

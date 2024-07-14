@@ -1,10 +1,10 @@
 import { defaultsDeep } from 'lodash-es';
+import Quill from 'quill';
 import DefaultOptions from './DefaultOptions';
 import { DisplaySize } from './modules/DisplaySize';
 import { Toolbar } from './modules/Toolbar';
 import { Resize } from './modules/Resize';
 import MinSize from './modules/MinSize';
-import Quill from 'quill';
 
 const knownModules = { DisplaySize, Toolbar, Resize, MinSize };
 
@@ -50,7 +50,7 @@ export default class ImageResize {
   initializeModules = () => {
     this.removeModules();
 
-    this.modules = this.moduleClasses.map((ModuleClass) => new (knownModules[ModuleClass] || ModuleClass)(this));
+    this.modules = this.moduleClasses.map(ModuleClass => new (knownModules[ModuleClass] || ModuleClass)(this));
 
     this.modules.forEach((module) => {
       module.onCreate();
@@ -86,7 +86,8 @@ export default class ImageResize {
       }
       // clicked on an image inside the editor
       this.show(evt.target);
-    } else if (this.img) {
+    }
+    else if (this.img) {
       // clicked on a non image
       this.hide();
     }
@@ -175,7 +176,7 @@ export default class ImageResize {
 
   checkImage = (evt) => {
     if (this.img) {
-      if (evt.keyCode == 46 || evt.keyCode == 8) {
+      if (evt.keyCode === 46 || evt.keyCode === 8) {
         Quill.find(this.img).deleteAt(0);
       }
       this.hide();

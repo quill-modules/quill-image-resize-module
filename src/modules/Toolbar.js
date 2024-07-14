@@ -1,12 +1,13 @@
-import { BaseModule } from './BaseModule';
 import Quill from 'quill';
+import { BaseModule } from './BaseModule';
+
 const icons = Quill.import('ui/icons');
 const IconAlignLeft = icons.align[''];
-const IconAlignCenter = icons.align['center'];
-const IconAlignRight = icons.align['right'];
+const IconAlignCenter = icons.align.center;
+const IconAlignRight = icons.align.right;
 
 const Parchment = Quill.imports.parchment;
-const AttributeClass = Parchment.Attributor.Style ? Parchment.Attributor.Style : Parchment.StyleAttributor;
+const AttributeClass = Parchment.Attributor.Style || Parchment.StyleAttributor;
 const FloatStyle = new AttributeClass('float', 'float');
 const MarginStyle = new AttributeClass('margin', 'margin');
 const DisplayStyle = new AttributeClass('display', 'display');
@@ -34,16 +35,18 @@ export class Toolbar extends BaseModule {
 
   // make sure icon inside editor
   updatePosition = () => {
-    const alignment = this.alignments.find((alignment) => alignment.isApplied(this.img));
+    const alignment = this.alignments.find(alignment => alignment.isApplied(this.img));
     if (alignment && this.img.width < this.toolbar.getBoundingClientRect().width) {
       Object.assign(this.toolbar.style, alignment.boxStyle);
-    } else {
+    }
+    else {
       Object.assign(this.toolbar.style, {
         left: '0',
         right: '0',
       });
     }
   };
+
   _defineAlignments = () => {
     this.alignments = [
       {
@@ -53,7 +56,7 @@ export class Toolbar extends BaseModule {
           FloatStyle.add(this.img, 'left');
           MarginStyle.add(this.img, '0 1em 1em 0');
         },
-        isApplied: () => FloatStyle.value(this.img) == 'left',
+        isApplied: () => FloatStyle.value(this.img) === 'left',
         boxStyle: {
           left: '0',
           right: '0',
@@ -66,7 +69,7 @@ export class Toolbar extends BaseModule {
           FloatStyle.remove(this.img);
           MarginStyle.add(this.img, 'auto');
         },
-        isApplied: () => MarginStyle.value(this.img) == 'auto',
+        isApplied: () => MarginStyle.value(this.img) === 'auto',
         boxStyle: {
           left: '0',
           right: '0',
@@ -79,7 +82,7 @@ export class Toolbar extends BaseModule {
           FloatStyle.add(this.img, 'right');
           MarginStyle.add(this.img, '0 0 1em 1em');
         },
-        isApplied: () => FloatStyle.value(this.img) == 'right',
+        isApplied: () => FloatStyle.value(this.img) === 'right',
         boxStyle: {
           left: null,
           right: '0',
@@ -96,13 +99,14 @@ export class Toolbar extends BaseModule {
       button.innerHTML = alignment.icon;
       button.addEventListener('click', () => {
         // deselect all buttons
-        buttons.forEach((button) => (button.style.filter = ''));
+        buttons.forEach(button => (button.style.filter = ''));
         if (alignment.isApplied()) {
           // If applied, unapply
           FloatStyle.remove(this.img);
           MarginStyle.remove(this.img);
           DisplayStyle.remove(this.img);
-        } else {
+        }
+        else {
           // otherwise, select button and apply
           this._selectButton(button);
           alignment.apply();

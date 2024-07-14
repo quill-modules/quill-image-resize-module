@@ -20,7 +20,7 @@ npm install quill-image-resize-module-rebuild
 import Quill from 'quill';
 import ImageResize from 'quill-image-resize-module-rebuild';
 
-var quill = new Quill(editor, {
+const quill = new Quill(editor, {
   // ...
   modules: {
     // ...
@@ -43,7 +43,7 @@ When `freeAspectRatio` is true, the image is not limited by the original image s
 The look and feel can be controlled with options `handleStyles`
 
 ```javascript
-var quill = new Quill(editor, {
+const quill = new Quill(editor, {
   // ...
   modules: {
     // ...
@@ -68,7 +68,7 @@ This module can handle the `Resize` module to change the size of the image, ensu
 `minSize` option can be a number or an array of width and height. When `freeAspectRatio` is false, the min size will be calculated based on origin image aspect ratio and width of `minSize`
 
 ```javascript
-var quill = new Quill(editor, {
+const quill = new Quill(editor, {
   // ...
   modules: {
     // ...
@@ -87,7 +87,7 @@ Displays a toolbar below the image, where the user can select an alignment for t
 The look and feel can be controlled with options:
 
 ```javascript
-var quill = new Quill(editor, {
+const quill = new Quill(editor, {
   // ...
   modules: {
     // ...
@@ -119,7 +119,7 @@ Make sure `DisplaySize` import after `Resize`. Otherwise, the display size will 
 The look and feel can be controlled with options:
 
 ```javascript
-var quill = new Quill(editor, {
+const quill = new Quill(editor, {
   // ...
   modules: {
     // ...
@@ -144,13 +144,13 @@ the module setup.
 For example,
 
 ```javascript
-import { Resize, BaseModule } from 'quill-image-resize-module';
+import { BaseModule, Resize } from 'quill-image-resize-module';
 
 class MyModule extends BaseModule {
   // See src/modules/BaseModule.js for documentation on the various lifecycle callbacks
 }
 
-var quill = new Quill(editor, {
+const quill = new Quill(editor, {
   // ...
   modules: {
     // ...

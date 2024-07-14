@@ -2269,14 +2269,16 @@
           left: null,
           transform: null,
         });
-      } else if (this.img.style.float == 'right') {
+      }
+      else if (this.img.style.float === 'right') {
         // position off bottom left
         Object.assign(this.display.style, {
           right: null,
           bottom: null,
           transform: `translate(calc(-100% - 4px), ${this.img.height}px)`,
         });
-      } else {
+      }
+      else {
         // position off bottom right
         Object.assign(this.display.style, {
           left: null,
@@ -2291,11 +2293,11 @@
 
   const icons = Quill.import('ui/icons');
   const IconAlignLeft = icons.align[''];
-  const IconAlignCenter = icons.align['center'];
-  const IconAlignRight = icons.align['right'];
+  const IconAlignCenter = icons.align.center;
+  const IconAlignRight = icons.align.right;
 
   const Parchment = Quill.imports.parchment;
-  const AttributeClass = Parchment.Attributor.Style ? Parchment.Attributor.Style : Parchment.StyleAttributor;
+  const AttributeClass = Parchment.Attributor.Style || Parchment.StyleAttributor;
   const FloatStyle = new AttributeClass('float', 'float');
   const MarginStyle = new AttributeClass('margin', 'margin');
   const DisplayStyle = new AttributeClass('display', 'display');
@@ -2323,16 +2325,18 @@
 
     // make sure icon inside editor
     updatePosition = () => {
-      const alignment = this.alignments.find((alignment) => alignment.isApplied(this.img));
+      const alignment = this.alignments.find(alignment => alignment.isApplied(this.img));
       if (alignment && this.img.width < this.toolbar.getBoundingClientRect().width) {
         Object.assign(this.toolbar.style, alignment.boxStyle);
-      } else {
+      }
+      else {
         Object.assign(this.toolbar.style, {
           left: '0',
           right: '0',
         });
       }
     };
+
     _defineAlignments = () => {
       this.alignments = [
         {
@@ -2342,7 +2346,7 @@
             FloatStyle.add(this.img, 'left');
             MarginStyle.add(this.img, '0 1em 1em 0');
           },
-          isApplied: () => FloatStyle.value(this.img) == 'left',
+          isApplied: () => FloatStyle.value(this.img) === 'left',
           boxStyle: {
             left: '0',
             right: '0',
@@ -2355,7 +2359,7 @@
             FloatStyle.remove(this.img);
             MarginStyle.add(this.img, 'auto');
           },
-          isApplied: () => MarginStyle.value(this.img) == 'auto',
+          isApplied: () => MarginStyle.value(this.img) === 'auto',
           boxStyle: {
             left: '0',
             right: '0',
@@ -2368,7 +2372,7 @@
             FloatStyle.add(this.img, 'right');
             MarginStyle.add(this.img, '0 0 1em 1em');
           },
-          isApplied: () => FloatStyle.value(this.img) == 'right',
+          isApplied: () => FloatStyle.value(this.img) === 'right',
           boxStyle: {
             left: null,
             right: '0',
@@ -2385,13 +2389,14 @@
         button.innerHTML = alignment.icon;
         button.addEventListener('click', () => {
           // deselect all buttons
-          buttons.forEach((button) => (button.style.filter = ''));
+          buttons.forEach(button => (button.style.filter = ''));
           if (alignment.isApplied()) {
             // If applied, unapply
             FloatStyle.remove(this.img);
             MarginStyle.remove(this.img);
             DisplayStyle.remove(this.img);
-          } else {
+          }
+          else {
             // otherwise, select button and apply
             this._selectButton(button);
             alignment.apply();
@@ -2437,8 +2442,8 @@
     };
 
     positionBoxes = () => {
-      const handleXOffset = `${-parseFloat(this.options.handleStyles.width) / 2}px`;
-      const handleYOffset = `${-parseFloat(this.options.handleStyles.height) / 2}px`;
+      const handleXOffset = `${-Number.parseFloat(this.options.handleStyles.width) / 2}px`;
+      const handleYOffset = `${-Number.parseFloat(this.options.handleStyles.height) / 2}px`;
 
       // set the top and left for each drag handle
       [
@@ -2503,31 +2508,36 @@
       // update image size
       const deltaX = evt.clientX - this.dragStartX;
       const deltaY = evt.clientY - this.dragStartY;
-      if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-        // left-side resize handler; dragging right shrinks image
-        this.img.width = Math.round(this.preDragWidth - deltaX);
-      } else {
-        // right-side resize handler; dragging right enlarges image
-        this.img.width = Math.round(this.preDragWidth + deltaX);
-      }
+      this.img.width = Math.round(this.preDragWidth + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaX);
 
-      if (this.options.freeAspectRatio) {
-        // not keep aspect radio
-        if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-          this.img.height = Math.round(this.preDragHeight - deltaY);
-        } else {
-          this.img.height = Math.round(this.preDragHeight + deltaY);
-        }
-      } else {
-        // reset aspect radio
-        this.img.height = Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
-      }
+      // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
+      //   // left-side resize handler; dragging right shrinks image
+      //   this.img.width = Math.round(this.preDragWidth - deltaX);
+      // } else {
+      //   // right-side resize handler; dragging right enlarges image
+      //   this.img.width = Math.round(this.preDragWidth + deltaX);
+      // }
+      this.img.height = this.options.freeAspectRatio
+        ? Math.round(this.preDragHeight + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaY)
+        : Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
+
+      // if (this.options.freeAspectRatio) {
+      //   // not keep aspect radio
+      //   // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
+      //   //     this.img.height = Math.round(this.preDragHeight - deltaY);
+      //   //   } else {
+      //   //     this.img.height = Math.round(this.preDragHeight + deltaY);
+      //   //   }
+      // } else {
+      //   // reset aspect radio
+      //   this.img.height = Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
+      // }
       this.requestUpdate();
     };
 
     setCursor = (value) => {
       [document.body, this.img].forEach((el) => {
-        el.style.cursor = value; // eslint-disable-line no-param-reassign
+        el.style.cursor = value;
       });
     };
   }
@@ -2536,27 +2546,30 @@
     onCreate = () => {
       this.resolveOptions();
     };
+
     onUpdate = () => {
       const blot = Quill.find(this.img);
       if (blot) {
         let resize = false;
         if (this.img.width < this.options.minSize[0]) {
           this.img.width = this.options.minSize[0];
-          this.overlay.style.width = this.img.width + 'px';
-          this.overlay.style.height = this.img.height + 'px';
+          this.overlay.style.width = `${this.img.width}px`;
+          this.overlay.style.height = `${this.img.height}px`;
           resize = true;
         }
         if (this.img.height < this.options.minSize[1]) {
           this.img.height = this.options.minSize[1];
-          this.overlay.style.width = this.img.width + 'px';
-          this.overlay.style.height = this.img.height + 'px';
+          this.overlay.style.width = `${this.img.width}px`;
+          this.overlay.style.height = `${this.img.height}px`;
           resize = true;
         }
         resize && this.resizer.repositionElements();
-      } else {
+      }
+      else {
         this.resizer.hide();
       }
     };
+
     resolveOptions = () => {
       if (!this.options.minSize || Number.isNaN(this.options.minSize)) {
         this.options.minSize = 48;
@@ -2619,7 +2632,7 @@
     initializeModules = () => {
       this.removeModules();
 
-      this.modules = this.moduleClasses.map((ModuleClass) => new (knownModules[ModuleClass] || ModuleClass)(this));
+      this.modules = this.moduleClasses.map(ModuleClass => new (knownModules[ModuleClass] || ModuleClass)(this));
 
       this.modules.forEach((module) => {
         module.onCreate();
@@ -2655,7 +2668,8 @@
         }
         // clicked on an image inside the editor
         this.show(evt.target);
-      } else if (this.img) {
+      }
+      else if (this.img) {
         // clicked on a non image
         this.hide();
       }
@@ -2744,7 +2758,7 @@
 
     checkImage = (evt) => {
       if (this.img) {
-        if (evt.keyCode == 46 || evt.keyCode == 8) {
+        if (evt.keyCode === 46 || evt.keyCode === 8) {
           Quill.find(this.img).deleteAt(0);
         }
         this.hide();
