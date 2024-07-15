@@ -35,7 +35,7 @@
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "@zzxming/eslint-config": "^0.0.9",
+    "@zzxming/eslint-config": "^0.0.10",
     "eslint-merge-processors": "^0.1.0",
     "eslint-plugin-jsonc": "^2.16.0",
     "eslint-plugin-markdown": "^5.1.0",

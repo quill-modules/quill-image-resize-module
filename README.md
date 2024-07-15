@@ -42,10 +42,9 @@ Adds handles to the image's corners which can be dragged with the mouse to resiz
 
 The look and feel can be controlled with options `handleStyles`
 
-> `New option` 
+> `New option`
 
 > When `freeAspectRatio` is true, the image is not limited by the original image scale.
-
 
 ```javascript
 const quill = new Quill(editor, {
@@ -66,8 +65,7 @@ const quill = new Quill(editor, {
 });
 ```
 
-
-> `New default module` 
+> `New default module`
 
 #### `MinSize` - The image min size
 

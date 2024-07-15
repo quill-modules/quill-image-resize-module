@@ -1,6 +1,7 @@
 import { factory } from '@zzxming/eslint-config';
 
 export default factory({
+  typescript: false,
   overrides: [
     {
       ignores: ['docs'],
