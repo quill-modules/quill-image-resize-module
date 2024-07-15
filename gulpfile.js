@@ -18,9 +18,8 @@ const buildModule = async () => {
   const bundle = await rollup({
     input: moduleInput,
     external: [/^quill/],
-    preserveEntrySignatures: 'allow-extension',
+    treeshake: true,
     plugins: [
-      nodeResolve(),
       getBabelOutputPlugin({
         presets: ['@babel/preset-env'],
       }),
