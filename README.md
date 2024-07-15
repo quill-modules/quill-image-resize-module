@@ -4,6 +4,8 @@ A module for Quill rich text editor to allow images to be resized. You can use i
 
 Fork from [quill-image-resize-module](https://github.com/kensnyder/quill-image-resize-module). This module fix export problem. Your can use `import ImageResize from 'quill-image-resize-module-rebuild';` to your project.
 
+Also add a default module `MinSize` and some options. Fix some display bug.
+
 ## Demo
 
 [quill1.3.7](https://zzxming.github.io/quill-image-resize-module/quill1.3.7/index.html)
@@ -38,9 +40,12 @@ If you want to pass the modules by youself. Please make sure `Resize` after `Min
 
 Adds handles to the image's corners which can be dragged with the mouse to resize the image.
 
-When `freeAspectRatio` is true, the image is not limited by the original image scale.
-
 The look and feel can be controlled with options `handleStyles`
+
+> `New option` 
+
+> When `freeAspectRatio` is true, the image is not limited by the original image scale.
+
 
 ```javascript
 const quill = new Quill(editor, {
@@ -60,6 +65,9 @@ const quill = new Quill(editor, {
   },
 });
 ```
+
+
+> `New default module` 
 
 #### `MinSize` - The image min size
 
