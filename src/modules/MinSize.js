@@ -1,7 +1,7 @@
 import Quill from 'quill';
 import { BaseModule } from './BaseModule';
 
-export default class MinSize extends BaseModule {
+export class MinSize extends BaseModule {
   onCreate = () => {
     this.resolveOptions();
   };

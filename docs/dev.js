@@ -2291,6 +2291,172 @@
     getCurrentSize = () => [this.img.width, this.img.height];
   }
 
+  class MinSize extends BaseModule {
+    onCreate = () => {
+      this.resolveOptions();
+    };
+
+    onUpdate = () => {
+      const blot = Quill.find(this.img);
+      if (blot) {
+        let resize = false;
+        if (this.img.width < this.options.minSize[0]) {
+          this.img.width = this.options.minSize[0];
+          this.overlay.style.width = `${this.img.width}px`;
+          this.overlay.style.height = `${this.img.height}px`;
+          resize = true;
+        }
+        if (this.img.height < this.options.minSize[1]) {
+          this.img.height = this.options.minSize[1];
+          this.overlay.style.width = `${this.img.width}px`;
+          this.overlay.style.height = `${this.img.height}px`;
+          resize = true;
+        }
+        resize && this.resizer.repositionElements();
+      }
+      else {
+        this.resizer.hide();
+      }
+    };
+
+    resolveOptions = () => {
+      if (!this.options.minSize || Number.isNaN(this.options.minSize)) {
+        this.options.minSize = 48;
+      }
+      if (!Array.isArray(this.options.minSize)) {
+        this.options.minSize = [this.options.minSize, this.options.minSize];
+      }
+      // aspect ratio is calculated based on width
+      if (!this.options.freeAspectRatio) {
+        const aspectRatio = this.img.naturalWidth / this.img.naturalHeight;
+        // const minWidth = this.options.minSize[1] / aspectRatio;
+        const minHeight = this.options.minSize[0] / aspectRatio;
+
+        this.options.minSize = [this.options.minSize[0], minHeight];
+      }
+    };
+  }
+
+  class Resize extends BaseModule {
+    onCreate = () => {
+      // track resize handles
+      this.boxes = [];
+
+      // add 4 resize handles
+      this.addBox('nwse-resize'); // top left
+      this.addBox('nesw-resize'); // top right
+      this.addBox('nwse-resize'); // bottom right
+      this.addBox('nesw-resize'); // bottom left
+
+      this.positionBoxes();
+    };
+
+    onDestroy = () => {
+      // reset drag handle cursors
+      this.setCursor('');
+    };
+
+    positionBoxes = () => {
+      const handleXOffset = `${-Number.parseFloat(this.options.handleStyles.width) / 2}px`;
+      const handleYOffset = `${-Number.parseFloat(this.options.handleStyles.height) / 2}px`;
+
+      // set the top and left for each drag handle
+      [
+        { left: handleXOffset, top: handleYOffset }, // top left
+        { right: handleXOffset, top: handleYOffset }, // top right
+        { right: handleXOffset, bottom: handleYOffset }, // bottom right
+        { left: handleXOffset, bottom: handleYOffset }, // bottom left
+      ].forEach((pos, idx) => {
+        Object.assign(this.boxes[idx].style, pos);
+      });
+    };
+
+    addBox = (cursor) => {
+      // create div element for resize handle
+      const box = document.createElement('div');
+
+      // Star with the specified styles
+      Object.assign(box.style, this.options.handleStyles);
+      box.style.cursor = cursor;
+
+      // Set the width/height to use 'px'
+      box.style.width = `${this.options.handleStyles.width}px`;
+      box.style.height = `${this.options.handleStyles.height}px`;
+
+      // listen for mousedown on each box
+      box.addEventListener('mousedown', this.handleMousedown, false);
+      // add drag handle to document
+      this.overlay.appendChild(box);
+      // keep track of drag handle
+      this.boxes.push(box);
+    };
+
+    handleMousedown = (evt) => {
+      // note which box
+      this.dragBox = evt.target;
+      // note starting mousedown position
+      this.dragStartX = evt.clientX;
+      this.dragStartY = evt.clientY;
+      // store the width before the drag
+      this.preDragWidth = this.img.width || this.img.naturalWidth;
+      this.preDragHeight = this.img.height || this.img.naturalHeight;
+      // set the proper cursor everywhere
+      this.setCursor(this.dragBox.style.cursor);
+      // listen for movement and mouseup
+      document.addEventListener('mousemove', this.handleDrag, false);
+      document.addEventListener('mouseup', this.handleMouseup, false);
+    };
+
+    handleMouseup = () => {
+      // reset cursor everywhere
+      this.setCursor('');
+      // stop listening for movement and mouseup
+      document.removeEventListener('mousemove', this.handleDrag);
+      document.removeEventListener('mouseup', this.handleMouseup);
+    };
+
+    handleDrag = (evt) => {
+      if (!this.img) {
+        // image not set yet
+        return;
+      }
+      // update image size
+      const deltaX = evt.clientX - this.dragStartX;
+      const deltaY = evt.clientY - this.dragStartY;
+      this.img.width = Math.round(this.preDragWidth + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaX);
+
+      // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
+      //   // left-side resize handler; dragging right shrinks image
+      //   this.img.width = Math.round(this.preDragWidth - deltaX);
+      // } else {
+      //   // right-side resize handler; dragging right enlarges image
+      //   this.img.width = Math.round(this.preDragWidth + deltaX);
+      // }
+      this.img.height = this.options.freeAspectRatio
+        ? Math.round(this.preDragHeight + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaY)
+        : Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
+
+      // if (this.options.freeAspectRatio) {
+      //   // not keep aspect radio
+      //   // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
+      //   //     this.img.height = Math.round(this.preDragHeight - deltaY);
+      //   //   } else {
+      //   //     this.img.height = Math.round(this.preDragHeight + deltaY);
+      //   //   }
+      // } else {
+      //   // reset aspect radio
+      //   this.img.height = Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
+      // }
+      this.requestUpdate();
+    };
+
+    setCursor = (value) => {
+      [document.body, this.img].forEach((el) => {
+        el.style.cursor = value;
+      });
+    };
+  }
+
   const icons = Quill.import('ui/icons');
   const IconAlignLeft = icons.align[''];
   const IconAlignCenter = icons.align.center;
@@ -2422,173 +2588,7 @@
     };
   }
 
-  class Resize extends BaseModule {
-    onCreate = () => {
-      // track resize handles
-      this.boxes = [];
-
-      // add 4 resize handles
-      this.addBox('nwse-resize'); // top left
-      this.addBox('nesw-resize'); // top right
-      this.addBox('nwse-resize'); // bottom right
-      this.addBox('nesw-resize'); // bottom left
-
-      this.positionBoxes();
-    };
-
-    onDestroy = () => {
-      // reset drag handle cursors
-      this.setCursor('');
-    };
-
-    positionBoxes = () => {
-      const handleXOffset = `${-Number.parseFloat(this.options.handleStyles.width) / 2}px`;
-      const handleYOffset = `${-Number.parseFloat(this.options.handleStyles.height) / 2}px`;
-
-      // set the top and left for each drag handle
-      [
-        { left: handleXOffset, top: handleYOffset }, // top left
-        { right: handleXOffset, top: handleYOffset }, // top right
-        { right: handleXOffset, bottom: handleYOffset }, // bottom right
-        { left: handleXOffset, bottom: handleYOffset }, // bottom left
-      ].forEach((pos, idx) => {
-        Object.assign(this.boxes[idx].style, pos);
-      });
-    };
-
-    addBox = (cursor) => {
-      // create div element for resize handle
-      const box = document.createElement('div');
-
-      // Star with the specified styles
-      Object.assign(box.style, this.options.handleStyles);
-      box.style.cursor = cursor;
-
-      // Set the width/height to use 'px'
-      box.style.width = `${this.options.handleStyles.width}px`;
-      box.style.height = `${this.options.handleStyles.height}px`;
-
-      // listen for mousedown on each box
-      box.addEventListener('mousedown', this.handleMousedown, false);
-      // add drag handle to document
-      this.overlay.appendChild(box);
-      // keep track of drag handle
-      this.boxes.push(box);
-    };
-
-    handleMousedown = (evt) => {
-      // note which box
-      this.dragBox = evt.target;
-      // note starting mousedown position
-      this.dragStartX = evt.clientX;
-      this.dragStartY = evt.clientY;
-      // store the width before the drag
-      this.preDragWidth = this.img.width || this.img.naturalWidth;
-      this.preDragHeight = this.img.height || this.img.naturalHeight;
-      // set the proper cursor everywhere
-      this.setCursor(this.dragBox.style.cursor);
-      // listen for movement and mouseup
-      document.addEventListener('mousemove', this.handleDrag, false);
-      document.addEventListener('mouseup', this.handleMouseup, false);
-    };
-
-    handleMouseup = () => {
-      // reset cursor everywhere
-      this.setCursor('');
-      // stop listening for movement and mouseup
-      document.removeEventListener('mousemove', this.handleDrag);
-      document.removeEventListener('mouseup', this.handleMouseup);
-    };
-
-    handleDrag = (evt) => {
-      if (!this.img) {
-        // image not set yet
-        return;
-      }
-      // update image size
-      const deltaX = evt.clientX - this.dragStartX;
-      const deltaY = evt.clientY - this.dragStartY;
-      this.img.width = Math.round(this.preDragWidth + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaX);
-
-      // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-      //   // left-side resize handler; dragging right shrinks image
-      //   this.img.width = Math.round(this.preDragWidth - deltaX);
-      // } else {
-      //   // right-side resize handler; dragging right enlarges image
-      //   this.img.width = Math.round(this.preDragWidth + deltaX);
-      // }
-      this.img.height = this.options.freeAspectRatio
-        ? Math.round(this.preDragHeight + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaY)
-        : Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
-
-      // if (this.options.freeAspectRatio) {
-      //   // not keep aspect radio
-      //   // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-      //   //     this.img.height = Math.round(this.preDragHeight - deltaY);
-      //   //   } else {
-      //   //     this.img.height = Math.round(this.preDragHeight + deltaY);
-      //   //   }
-      // } else {
-      //   // reset aspect radio
-      //   this.img.height = Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
-      // }
-      this.requestUpdate();
-    };
-
-    setCursor = (value) => {
-      [document.body, this.img].forEach((el) => {
-        el.style.cursor = value;
-      });
-    };
-  }
-
-  class MinSize extends BaseModule {
-    onCreate = () => {
-      this.resolveOptions();
-    };
-
-    onUpdate = () => {
-      const blot = Quill.find(this.img);
-      if (blot) {
-        let resize = false;
-        if (this.img.width < this.options.minSize[0]) {
-          this.img.width = this.options.minSize[0];
-          this.overlay.style.width = `${this.img.width}px`;
-          this.overlay.style.height = `${this.img.height}px`;
-          resize = true;
-        }
-        if (this.img.height < this.options.minSize[1]) {
-          this.img.height = this.options.minSize[1];
-          this.overlay.style.width = `${this.img.width}px`;
-          this.overlay.style.height = `${this.img.height}px`;
-          resize = true;
-        }
-        resize && this.resizer.repositionElements();
-      }
-      else {
-        this.resizer.hide();
-      }
-    };
-
-    resolveOptions = () => {
-      if (!this.options.minSize || Number.isNaN(this.options.minSize)) {
-        this.options.minSize = 48;
-      }
-      if (!Array.isArray(this.options.minSize)) {
-        this.options.minSize = [this.options.minSize, this.options.minSize];
-      }
-      // aspect ratio is calculated based on width
-      if (!this.options.freeAspectRatio) {
-        const aspectRatio = this.img.naturalWidth / this.img.naturalHeight;
-        // const minWidth = this.options.minSize[1] / aspectRatio;
-        const minHeight = this.options.minSize[0] / aspectRatio;
-
-        this.options.minSize = [this.options.minSize[0], minHeight];
-      }
-    };
-  }
-
-  const knownModules = { DisplaySize, Toolbar, Resize, MinSize };
+  const knownModules = { MinSize, Resize, DisplaySize, Toolbar };
 
   /**
    * Custom module for quilljs to allow user to resize <img> elements
@@ -2766,6 +2766,7 @@
     };
   }
 
+  exports.BaseModule = BaseModule;
   exports.DisplaySize = DisplaySize;
   exports.ImageResize = ImageResize;
   exports.MinSize = MinSize;
