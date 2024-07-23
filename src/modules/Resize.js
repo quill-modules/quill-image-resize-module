@@ -88,28 +88,10 @@ export class Resize extends BaseModule {
     const deltaY = evt.clientY - this.dragStartY;
     this.img.width = Math.round(this.preDragWidth + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaX);
 
-    // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-    //   // left-side resize handler; dragging right shrinks image
-    //   this.img.width = Math.round(this.preDragWidth - deltaX);
-    // } else {
-    //   // right-side resize handler; dragging right enlarges image
-    //   this.img.width = Math.round(this.preDragWidth + deltaX);
-    // }
     this.img.height = this.options.freeAspectRatio
-      ? Math.round(this.preDragHeight + (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3] ? -1 : 1) * deltaY)
+      ? Math.round(this.preDragHeight + ((this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) ? -1 : 1) * deltaY)
       : Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
 
-    // if (this.options.freeAspectRatio) {
-    //   // not keep aspect radio
-    //   // if (this.dragBox === this.boxes[0] || this.dragBox === this.boxes[3]) {
-    //   //     this.img.height = Math.round(this.preDragHeight - deltaY);
-    //   //   } else {
-    //   //     this.img.height = Math.round(this.preDragHeight + deltaY);
-    //   //   }
-    // } else {
-    //   // reset aspect radio
-    //   this.img.height = Math.round((this.img.width / this.img.naturalWidth) * this.img.naturalHeight);
-    // }
     this.requestUpdate();
   };
 
