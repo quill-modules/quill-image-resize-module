@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zzxming/quill-image-resize-module.git"
+    "url": "git+https://github.com/quill-modules/quill-image-resize-module.git"
   },
   "keywords": [
     "quill",

@@ -8,9 +8,9 @@ Also add a default module `MinSize` and some options. Fix some display bug.
 
 ## Demo
 
-[quill1.3.7](https://zzxming.github.io/quill-image-resize-module/quill1.3.7/index.html)
+[quill1.3.7](https://quill-modules.github.io/quill-image-resize-module/quill1.3.7/index.html)
 
-[quill2.0.0](https://zzxming.github.io/quill-image-resize-module/quill2.0.0/index.html)
+[quill2.0.0](https://quill-modules.github.io/quill-image-resize-module/quill2.0.0/index.html)
 
 ## Usage
 
